@@ -6,7 +6,7 @@
 /*   By: olabrahm <olabrahm@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/25 21:03:17 by olabrahm          #+#    #+#             */
-/*   Updated: 2021/11/26 23:14:42 by olabrahm         ###   ########.fr       */
+/*   Updated: 2021/11/26 23:48:27 by olabrahm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,15 +14,11 @@
 
 static t_transmission	g_current;
 
-static void	ft_check_pids(int pid1, int pid2)
+static int	ft_check_signal(int signal)
 {
-	if (pid1 == -1)
-		pid1 = pid2;
-	else if (pid1 != pid2)
-	{
-		ft_printf("\nBit loss detected. Bye.\n");
-		exit(-1);
-	}
+	if (signal == 31)
+		return (0);
+	return (1);
 }
 
 static void	handle_bit(int signal, siginfo_t *info, void *context)
@@ -31,13 +27,16 @@ static void	handle_bit(int signal, siginfo_t *info, void *context)
 	int			bin;
 
 	(void) context;
-	ft_check_pids(g_current.sender_pid, info->si_pid);
+	if (g_current.sender_pid == -1)
+		g_current.sender_pid = info->si_pid;
+	else if (g_current.sender_pid != info->si_pid)
+	{
+		ft_printf("\nBit loss detected. Bye.\n");
+		exit(-1);
+	}
 	if (i <= 7)
 	{
-		if (signal == 31)
-			bin = 0;
-		if (signal == 30)
-			bin = 1;
+		bin = ft_check_signal(signal);
 		g_current.byte = g_current.byte | bin;
 		if (i != 7)
 		{

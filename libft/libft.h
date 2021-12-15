@@ -1,27 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minitalk.h                                         :+:      :+:    :+:   */
+/*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: olabrahm <olabrahm@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/12/14 21:24:27 by olabrahm          #+#    #+#             */
-/*   Updated: 2021/12/14 21:37:53 by olabrahm         ###   ########.fr       */
+/*   Created: 2021/12/01 07:47:39 by olabrahm          #+#    #+#             */
+/*   Updated: 2021/12/14 22:52:35 by olabrahm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINITALK_H
-# define MINITALK_H
+#ifndef LIBFT_H
+# define LIBFT_H
 
-# include <stdio.h>
-# include <signal.h>
+# include <stdlib.h>
 # include <unistd.h>
-# include "ft_printf/ft_printf.h"
-# include "libft/libft.h"
 
-typedef struct s_transmission {
-	int	byte;
-	int	pid;
-}	t_transmission;
+int		ft_strlen(char *str);
+char	*ft_strdup(char *str);
+int		ft_atoi(char *str);
+int		ft_isdigit(int c);
 
 #endif

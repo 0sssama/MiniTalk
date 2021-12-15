@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: olabrahm <olabrahm@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/11/25 21:03:17 by olabrahm          #+#    #+#             */
-/*   Updated: 2021/11/26 23:48:27 by olabrahm         ###   ########.fr       */
+/*   Created: 2021/12/14 21:28:39 by olabrahm          #+#    #+#             */
+/*   Updated: 2021/12/15 00:06:13 by olabrahm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,29 +14,17 @@
 
 static t_transmission	g_current;
 
-static int	ft_check_signal(int signal)
-{
-	if (signal == 31)
-		return (0);
-	return (1);
-}
-
-static void	handle_bit(int signal, siginfo_t *info, void *context)
+static void	ft_handle_bit(int signal, siginfo_t *info, void *context)
 {
 	static int	i;
 	int			bin;
 
 	(void) context;
-	if (g_current.sender_pid == -1)
-		g_current.sender_pid = info->si_pid;
-	else if (g_current.sender_pid != info->si_pid)
-	{
-		ft_printf("\nBit loss detected. Bye.\n");
-		exit(-1);
-	}
+	if (g_current.pid == -1)
+		g_current.pid = info->si_pid;
 	if (i <= 7)
 	{
-		bin = ft_check_signal(signal);
+		bin = signal == SIGUSR1;
 		g_current.byte = g_current.byte | bin;
 		if (i != 7)
 		{
@@ -46,20 +34,20 @@ static void	handle_bit(int signal, siginfo_t *info, void *context)
 		else
 			i = 0;
 	}
+	usleep(100);
+	if (kill(g_current.pid, SIGUSR1) != 0)
+		ft_printf("\n[CLIENT] Client process dead.\n");
 }
 
-static int	ft_receive_char(void)
+static unsigned char	ft_receive_char(void)
 {
 	struct sigaction	action;
 	int					i;
-	int					received_byte;
 
 	i = 7;
+	g_current.byte = 0b00000000;
 	action.sa_flags = SA_SIGINFO;
-	action.sa_sigaction = handle_bit;
-	sigemptyset(&action.sa_mask);
-	sigaddset(&action.sa_mask, SIGUSR1);
-	sigaddset(&action.sa_mask, SIGUSR2);
+	action.sa_sigaction = ft_handle_bit;
 	while (i >= 0)
 	{
 		sigaction(SIGUSR1, &action, NULL);
@@ -67,35 +55,28 @@ static int	ft_receive_char(void)
 		pause();
 		i--;
 	}
-	received_byte = g_current.byte;
-	g_current.byte = 0b00000000;
-	return (received_byte);
+	return (g_current.byte);
 }
 
 static void	ft_receive_str(void)
 {
-	char	current_char;
+	unsigned char	c;
 
-	current_char = ft_receive_char();
-	while (current_char)
+	c = ft_receive_char();
+	while (c)
 	{
-		ft_printf("%c", current_char);
-		current_char = ft_receive_char();
+		ft_printf("%c", c);
+		c = ft_receive_char();
 	}
 	ft_printf("\n");
-	usleep(600);
-	if (kill(g_current.sender_pid, SIGUSR1) != 0)
-	{
-		ft_printf("\nAn error occurred. :( Is the client process still alive?\n");
-		exit(-1);
-	}
-	g_current.sender_pid = -1;
 }
 
 int	main(void)
 {
-	ft_printf("Server PID : %d\n", getpid());
-	g_current.sender_pid = -1;
+	ft_printf("[SERVER] Pid : %d\n", getpid());
 	while (1)
+	{
+		g_current.pid = -1;
 		ft_receive_str();
+	}
 }

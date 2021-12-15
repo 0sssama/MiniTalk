@@ -1,27 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minitalk.h                                         :+:      :+:    :+:   */
+/*   ft_strlen.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: olabrahm <olabrahm@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/12/14 21:24:27 by olabrahm          #+#    #+#             */
-/*   Updated: 2021/12/14 21:37:53 by olabrahm         ###   ########.fr       */
+/*   Created: 2021/12/01 07:50:27 by olabrahm          #+#    #+#             */
+/*   Updated: 2021/12/14 22:52:42 by olabrahm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINITALK_H
-# define MINITALK_H
+#include "libft.h"
 
-# include <stdio.h>
-# include <signal.h>
-# include <unistd.h>
-# include "ft_printf/ft_printf.h"
-# include "libft/libft.h"
+int	ft_strlen(char *str)
+{
+	int	i;
 
-typedef struct s_transmission {
-	int	byte;
-	int	pid;
-}	t_transmission;
-
-#endif
+	i = 0;
+	while (str[i])
+		i++;
+	return (i);
+}
